@@ -1,0 +1,21 @@
+# Use the official lightweight Python image.
+FROM python:3.9-slim
+
+ENV APP_HOME /app
+WORKDIR $APP_HOME
+
+# set env variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+ENV PORT 8080
+
+# install dependencies
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+# copy project
+COPY . .
+COPY modelo.h5 $APP_HOME/
+
+CMD exec gunicorn --bind :$PORT --workers 1 --worker-class uvicorn.workers.UvicornWorker --threads 8 app.main:app
+# CMD exec 'uvicorn app.main:app --host 0.0.0.0 --port 8080
